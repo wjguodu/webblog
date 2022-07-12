@@ -34,62 +34,6 @@
 
     
     
-    
-        <script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        
-            load: ['[tex]/mhchem'],
-        
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        
-            packages: {'[+]': ['mhchem']},
-        
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
           
 
     
@@ -233,128 +177,26 @@
 </v-row>
 
                             <v-card class="elevation-2 index-card">
-  
-    <article class="index-article">
-      
-      <div class="index-article-header">
-        <v-row no-gutters>
-          <v-col cols="auto">
-            <div class="index-article-header-date font-weight-medium">
-              2022-07-12
-            </div>
-          </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="auto">
-            
-              <v-card flat color="secondary" tile class="index-article-header-tag  font-weight-medium">
-                
-                  <span class="index-article-header-tag-content">
-                    <v-icon>fas fa-tag</v-icon>
-                    <a rel="tag" href = /tags/%E5%85%A8%E6%96%87%E6%A3%80%E7%B4%A2%E5%BC%95%E6%93%8E/ >全文检索引擎</a>
-                  </span>
-                
-              </v-card>
-            
-          </v-col>
-        </v-row>
-        <span>
-          
-            <a class="index-article-header-category font-weight-bold" href="/categories/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E4%B9%8B-Es/">搜索引擎之-Es></a>
-           
-        </span> 
-        <a class="index-article-header-title font-weight-medium" href="/2022/07/12/ElasticSearch-%E5%85%A5%E9%97%A8/">ElasticSearch快速入门实战</a>
-      </div>
-      
-      <div class="index-article-content">
+    <v-timeline class="timeline" dense>
+        <v-timeline-item class="timeline-header" color="secondary lighten-2">
+            <span class="timeline-title">全文检索引擎</span>
+            <span class="timeline-subtitle">Tags</span>
+        </v-timeline-item>
         
-          
-全文检索数据分类：
-结构化数据： 固定格式，有限长度 比如mysql存的数据
-非结构化数据：不定长，无固定格式 比如邮件，word文档，日志
-
-搜索分类：
-结构化数据搜索： 使用关系型数据库
-非结构化数据搜索
-顺序扫描
-全文检索
-
-
-
-设想一个关于搜索的场景，假设我们要搜索一首诗句内容中带“前”字的古诗
-
-
-
-name
-content
-author
-
-
-
-静夜思
-床前明月光,疑是地上霜。举头望明月，低头思故乡。
-李白
-
-
-望庐山瀑布
-日照香炉生紫烟，遥看瀑布挂前川。飞流直下三千尺,疑是银 河落九天。
-李白
-
-
-…
-…
-…
-
-
-用传统关系型数据库和ES 实现会有什么差别？
-如果用像 My...
+            <v-timeline-item fill-dot small color="secondary lighten-2">
+                <div class="timeline-item-post d-none d-md-block">
+                    <span class="timeline-item-time">2022.07.12</span>
+                    <a href="/2022/07/12/ElasticSearch-%E5%85%A5%E9%97%A8/" class="timeline-item-title">ElasticSearch快速入门实战</a>
+                </div>
+                <div class="timeline-item-post-mobile d-block d-md-none">
+                    <span class="timeline-item-time">2022.07.12</span><br>
+                    <a href="/2022/07/12/ElasticSearch-%E5%85%A5%E9%97%A8/" class="timeline-item-title">ElasticSearch快速入门实战</a>
+                </div>
+                <v-divider></v-divider>
+            </v-timeline-item>
         
-      </div>
-      
-      <div class="index-article-readmore ">
-        <v-btn text href="/2022/07/12/ElasticSearch-%E5%85%A5%E9%97%A8/">Read More</v-btn>
-      </div>
-      <v-divider></v-divider>
-    </article> 
-  
-    <article class="index-article">
-      
-      <div class="index-article-header">
-        <v-row no-gutters>
-          <v-col cols="auto">
-            <div class="index-article-header-date font-weight-medium">
-              2022-07-12
-            </div>
-          </v-col>
-          <v-spacer></v-spacer>
-          <v-col cols="auto">
-            
-          </v-col>
-        </v-row>
-        <span>
-          
-            <a class="index-article-header-category font-weight-bold" href="/2022/07/12/hello-world/">Uncategorized></a>
-           
-        </span> 
-        <a class="index-article-header-title font-weight-medium" href="/2022/07/12/hello-world/">Hello World1231231231231231</a>
-      </div>
-      
-      <div class="index-article-content">
-        
-          Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;
-
-More info: Writing
-Run server1$ hexo ...
-        
-      </div>
-      
-      <div class="index-article-readmore ">
-        <v-btn text href="/2022/07/12/hello-world/">Read More</v-btn>
-      </div>
-      <v-divider></v-divider>
-    </article> 
-   
-</v-card>  
+    </v-timeline>
+</v-card>
 
          
                             <div id="mobile-footer" class="d-block d-md-none">

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <script>if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode)) window.location.href="https://support.dmeng.net/upgrade-your-browser.html?referrer="+encodeURIComponent(window.location.href); </script>
+    
+    
+        <link rel="shortcut icon" href="/images/favicon.ico">
+    
+     
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.2.30/dist/vuetify.min.css" rel="stylesheet">
+    
+<link rel="stylesheet" href="/css/main.css">
+
+    
+    
+
+
+
+
+
+
+
+    
+    
+          
+
+    
+    
+    
+    
+    <title>
+        
+            ElasticSearch快速入门实战 | Hexo
+        
+    </title>
+    
+    
+<meta name="generator" content="Hexo 6.2.0"></head>
+<body>
+    <div id="app">
+        <v-app>
+            <v-content id="page">
+                <v-container fluid>
+                    <v-row>
+                        <v-col cols="2" class="d-none d-md-block">
+                            <div id="sidebar" class="float-right">
+    <a href="/" rel="home">
+        <v-avatar size=96>
+            <img id="logo" src="https://avatars.githubusercontent.com/u/31847433?s=400&amp;v=4">     
+        </v-avatar> 
+    </a>
+    <v-divider></v-divider>
+    <div class="mini-menu">
+        <v-btn icon href="/">
+            <v-icon>home</v-icon>
+        </v-btn>
+        <v-btn icon href="/categories/">
+            <v-icon>folder</v-icon>
+        </v-btn>
+        <v-btn icon href="/tags/">
+            <v-icon>bookmark</v-icon>
+        </v-btn>
+        <v-btn icon @click="SetNightMode">
+            <v-icon>{{ nightMode }}</v-icon>
+        </v-btn>
+    </div>
+    <v-list id="main-menu" class="font-weight-bold" flat>
+        
+    </v-list>
+    <v-divider></v-divider>
+    
+        <div class="post-toc">
+            <a href="/2022/07/12/ElasticSearch-%E5%85%A5%E9%97%A8/" class="toc-header">Table of Contents</a>
+            <div class="toc-content">
+                <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A8%E6%96%87%E6%A3%80%E7%B4%A2"><span class="toc-number">1.</span> <span class="toc-text">全文检索</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%88%86%E7%B1%BB%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">数据分类：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%90%9C%E7%B4%A2%E5%88%86%E7%B1%BB%EF%BC%9A"><span class="toc-number">1.2.</span> <span class="toc-text">搜索分类：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%85%A8%E6%96%87%E6%A3%80%E7%B4%A2"><span class="toc-number">2.</span> <span class="toc-text">什么是全文检索</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%A8%E6%96%87%E6%A3%80%E7%B4%A2%E6%98%AF%E6%8C%87%EF%BC%9A"><span class="toc-number">2.1.</span> <span class="toc-text">全文检索是指：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95"><span class="toc-number">3.</span> <span class="toc-text">倒排索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E6%8E%92%E7%B4%A2%E5%BC%95%EF%BC%88%E6%AD%A3%E5%90%91%E7%B4%A2%E5%BC%95%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">正排索引（正向索引）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95%EF%BC%88%E5%8F%8D%E5%90%91%E7%B4%A2%E5%BC%95%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">倒排索引（反向索引）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ElasticSearch%E7%AE%80%E4%BB%8B"><span class="toc-number">6.</span> <span class="toc-text">ElasticSearch简介</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ElasticSearch%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">6.1.</span> <span class="toc-text">ElasticSearch是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B5%B7%E6%BA%90%E2%80%94%E2%80%94Lucene"><span class="toc-number">6.1.1.</span> <span class="toc-text">起源——Lucene</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Elasticsearch%E7%9A%84%E8%AF%9E%E7%94%9F"><span class="toc-number">6.1.2.</span> <span class="toc-text">Elasticsearch的诞生</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ElasticSearch%E7%89%88%E6%9C%AC%E7%89%B9%E6%80%A7"><span class="toc-number">6.1.3.</span> <span class="toc-text">ElasticSearch版本特性</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ElasticSearch-vs-Solr"><span class="toc-number">6.2.</span> <span class="toc-text">ElasticSearch vs Solr</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Elastic-Stack%E4%BB%8B%E7%BB%8D"><span class="toc-number">6.3.</span> <span class="toc-text">Elastic Stack介绍</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ElasticSearch%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">6.4.</span> <span class="toc-text">ElasticSearch应用场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ElasticSearch%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B"><span class="toc-number">6.5.</span> <span class="toc-text">ElasticSearch快速开始</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AFKibana%E5%AE%89%E8%A3%85"><span class="toc-number">6.6.</span> <span class="toc-text">客户端Kibana安装</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ElasticSearch%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">6.7.</span> <span class="toc-text">ElasticSearch基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93-VS-ElasticSearch"><span class="toc-number">6.8.</span> <span class="toc-text">关系型数据库 VS ElasticSearch</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%B4%A2%E5%BC%95%EF%BC%88Index%EF%BC%89"><span class="toc-number">6.8.1.</span> <span class="toc-text">索引（Index）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%EF%BC%88Document%EF%BC%89"><span class="toc-number">6.8.2.</span> <span class="toc-text">文档（Document）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E5%85%83%E6%95%B0%E6%8D%AE"><span class="toc-number">6.8.3.</span> <span class="toc-text">文档元数据</span></a></li></ol></li></ol></li></ol>
+            </div>
+        </div>
+    
+
+    <div id="footer">
+        <div class="footer-social">
+            
+                
+                <v-btn icon href="mailto:kb1000fx@gmail.com" target="_blank">
+                    <v-icon>fas fa-envelope</v-icon>
+                </v-btn>
+            
+                
+                <v-btn icon href="https://github.com/kb1000fx" target="_blank">
+                    <v-icon>fab fa-github</v-icon>
+                </v-btn>
+            
+                
+                <v-btn icon href="https://steamcommunity.com/profiles/76561198346798163" target="_blank">
+                    <v-icon>fab fa-steam</v-icon>
+                </v-btn>
+            
+                
+                <v-btn icon href="https://weibo.com/kb1000fx" target="_blank">
+                    <v-icon>fab fa-weibo</v-icon>
+                </v-btn>
+            
+        </div>
+        <v-divider></v-divider>
+        <div class="footer-content">
+            
+                <span id="busuanzi_container_site_uv" style="display: none;"> 
+                    Total Visitors <span id="busuanzi_value_site_uv"></span>
+                </span>
+                <br>
+            
+            <span>Theme: <a target="_blank" rel="noopener" href="https://github.com/kb1000fx/hexo-theme-insulin">Insulin</a></span><br>
+            <span>Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a></span><br>
+            <span>
+                &copy; 2015 - 2022 
+                John Doe
+            </span>
+        </div>
+    </div>
+</div>
+
+                        </v-col>
+                        <v-col cols="12" md="10">
+                            <v-row>
+  <v-col cols="12" md="8" align-self="end">
+    <div id="site-header">
+      <div id="site-title">
+        <a href="/" rel="home">Hexo</a>
+      </div>
+      <div id="site-description"></div>
+      <div id="mobile-menu" class="d-block d-md-none">
+        <v-text-field label="请输入关键字" data-src="search.xml" v-model="searchHeaderValue" prepend-inner-icon="search" clearable clear-icon="clear" @keydown.enter="EnterSearch(searchHeaderValue,false)"></v-text-field>
+        <div class="mobile-mini-menu">
+          <v-btn icon href="/">
+              <v-icon>home</v-icon>
+          </v-btn>
+          <v-btn icon href="/categories/">
+              <v-icon>folder</v-icon>
+          </v-btn>
+          <v-btn icon href="/tags/">
+              <v-icon>bookmark</v-icon>
+          </v-btn>
+          <v-btn icon @click="SetNightMode">
+              <v-icon>{{ nightMode }}</v-icon>
+          </v-btn>
+          
+        </div>
+      </div>    
+    </div>
+  </v-col>  
+  <v-col cols="4" align-self="end" class="d-none d-md-block">
+    <v-col align-self="end">
+      <v-text-field label="请输入关键字" data-src="search.xml" v-model="searchHeaderValue" prepend-icon="search" clearable clear-icon="clear" @keydown.enter="EnterSearch(searchHeaderValue,false)"></v-text-field>
+    </v-col> 
+  </v-col>
+</v-row>
+
+                            <v-card class="elevation-2 post-card">
+    
+    
+        <div class="post-header">
+  <a class="post-header-title font-weight-medium" href="/2022/07/12/ElasticSearch-%E5%85%A5%E9%97%A8/">ElasticSearch快速入门实战</a>
+  <div class="post-header-meta">   
+    <span>
+      <v-icon color="">event</v-icon>
+      Posted on:&nbsp;2022-07-12
+    </span>
+    <span>
+      <v-icon color="">event_available</v-icon>
+      Edited on:&nbsp;2022-07-12
+    </span>
+    <span>
+      <v-icon color="">folder</v-icon>
+      In:&nbsp;<a class="category-link" href="/categories/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E4%B9%8B-Es/">搜索引擎之-Es</a>
+    </span>
+    
+    <span>
+      <v-icon color="">visibility</v-icon>
+      Views:&nbsp;<span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+    </span>
+    
+  </div>
+</div>
+
+    
+    
+    
+    
+    <div class="post-content typo">
+        <p><img src="https://s3.bmp.ovh/imgs/2022/07/12/75d475b7ec494d48.png"></p>
+<h3 id="全文检索"><a href="#全文检索" class="headerlink" title="全文检索"></a>全文检索</h3><h4 id="数据分类："><a href="#数据分类：" class="headerlink" title="数据分类："></a>数据分类：</h4><ol>
+<li>结构化数据： 固定格式，有限长度 比如mysql存的数据</li>
+<li>非结构化数据：不定长，无固定格式 比如邮件，word文档，日志</li>
+</ol>
+<h4 id="搜索分类："><a href="#搜索分类：" class="headerlink" title="搜索分类："></a>搜索分类：</h4><ol>
+<li>结构化数据搜索： 使用关系型数据库</li>
+<li>非结构化数据搜索<ul>
+<li>顺序扫描</li>
+<li>全文检索</li>
+</ul>
+</li>
+</ol>
+<p>设想一个关于搜索的场景，假设我们要搜索一首诗句内容中带“前”字的古诗</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>content</th>
+<th>author</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>静夜思</td>
+<td>床前明月光,疑是地上霜。举头望明月，低头思故乡。</td>
+<td>李白</td>
+</tr>
+<tr>
+<td>望庐山瀑布</td>
+<td>日照香炉生紫烟，遥看瀑布挂前川。飞流直下三千尺,疑是银 河落九天。</td>
+<td>李白</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p><strong>用传统关系型数据库和ES 实现会有什么差别？</strong></p>
+<p>如果用像 MySQL 这样的 RDBMS 来存储古诗的话，我们应该会去使用这样的 SQL 去查询</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select name from poems where content like &quot;%前%&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这种我们称为顺序扫描法，需要遍历所有的记录进行匹配。不但效率低，而且不符合我们搜<br>索时的期望，比如我们在搜索“ABCD”这样的关键词时，通常还希望看<br>到”A”,”AB”,”CD”,“ABC”的搜索结果。</p>
+<h3 id="什么是全文检索"><a href="#什么是全文检索" class="headerlink" title="什么是全文检索"></a>什么是全文检索</h3><h4 id="全文检索是指："><a href="#全文检索是指：" class="headerlink" title="全文检索是指："></a>全文检索是指：</h4><ul>
+<li>通过一个程序扫描文本中的每一个单词，针对单词建立索引，并保存该单词在文 本中的位置、以及出现的次数</li>
+<li>用户查询时，通过之前建立好的索引来查询，将索引中单词对应的文本位置、出 现的次数返回给用户，因为有了具体文本的位置，所以就可以将具体内容读取出来了</li>
+</ul>
+<p>搜索原理简单概括的话可以分为这么几步：</p>
+<ul>
+<li>内容爬取，停顿词过滤比如一些无用的像”的”，“了”之类的语气词&#x2F;连接词</li>
+<li>内容分词，提取关键词</li>
+<li>根据关键词建立倒排索引</li>
+<li>用户输入关键词进行搜索</li>
+</ul>
+<h3 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h3><p>索引就类似于目录，平时我们使用的都是索引，都是通过主键定位到某条数据， 那么倒排索引呢，刚好相反，数据对应到主键。</p>
+<p><img src="https://s3.bmp.ovh/imgs/2022/07/12/a4f48f140483dd2b.png"></p>
+<h3 id="正排索引（正向索引）"><a href="#正排索引（正向索引）" class="headerlink" title="正排索引（正向索引）"></a>正排索引（正向索引）</h3><table>
+<thead>
+<tr>
+<th>文章ID</th>
+<th>文章标题</th>
+<th>文章内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>浅析JAVA设计模式</td>
+<td>JAVA设计模式是每一个JAVA程序员都应该掌握的进阶知识</td>
+</tr>
+<tr>
+<td>2</td>
+<td>JAVA多线程设计模式</td>
+<td>JAVA多线程与设计模式结合</td>
+</tr>
+</tbody></table>
+<h3 id="倒排索引（反向索引）"><a href="#倒排索引（反向索引）" class="headerlink" title="倒排索引（反向索引）"></a>倒排索引（反向索引）</h3><p>假如，我们有一个站内搜索的功能，通过某个关键词来搜索相关的文章，那么这个关键词可<br>能出现在标题中，也可能出现在文章内容中，那我们将会在创建或修改文章的时候，建立一<br>个关键词与文章的对应关系表，这种，我们可以称之为倒排索引。</p>
+<p>like  %java设计模式% java 设计模式</p>
+<table>
+<thead>
+<tr>
+<th>关键词</th>
+<th>文章ID</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JAVA</td>
+<td>1</td>
+</tr>
+<tr>
+<td>设计模式</td>
+<td>1,2</td>
+</tr>
+<tr>
+<td>多线程</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<p>简单理解，正向索引是通过key找value，反向索引则是通过value找key。ES底层在检索时 底层使用的就是倒排索引。</p>
+<h3 id="ElasticSearch简介"><a href="#ElasticSearch简介" class="headerlink" title="ElasticSearch简介"></a>ElasticSearch简介</h3><h4 id="ElasticSearch是什么"><a href="#ElasticSearch是什么" class="headerlink" title="ElasticSearch是什么"></a>ElasticSearch是什么</h4><p>ElasticSearch（简称ES）是一个分布式、RESTful 风格的搜索和数据分析引擎，是用Java 开发并且是当前最流行的开源的企业级搜索引擎，能够达到近实时搜索，稳定，可靠，快 速，安装使用方便。 客户端支持Java、.NET（C#）、PHP、Python、Ruby等多种语言。</p>
+<p>官方网站: <a target="_blank" rel="noopener" href="https://www.elastic.co/">https://www.elastic.co/</a></p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/past-releases#elasticsearch">https://www.elastic.co/cn/downloads/past-releases#elasticsearch</a></p>
+<p>搜索引擎排名：</p>
+<p><img src="https://s3.bmp.ovh/imgs/2022/07/12/e38fcb04ee89b0af.png"></p>
+<h5 id="起源——Lucene"><a href="#起源——Lucene" class="headerlink" title="起源——Lucene"></a>起源——Lucene</h5><ul>
+<li>基于Java语言开发的搜索引擎库类</li>
+<li>创建于1999年，2005年成为Apache 顶级开源项目</li>
+<li>Lucene具有高性能、易扩展的优点</li>
+<li>Lucene的局限性︰<ul>
+<li>只能基于Java语言开发</li>
+<li>类库的接口学习曲线陡峭</li>
+<li>原生并不支持水平扩展</li>
+</ul>
+</li>
+</ul>
+<h5 id="Elasticsearch的诞生"><a href="#Elasticsearch的诞生" class="headerlink" title="Elasticsearch的诞生"></a>Elasticsearch的诞生</h5><p>Elasticsearch是构建在Apache Lucene之上的开源分布式搜索引擎。</p>
+<ul>
+<li><p>2004年 Shay Banon 基于Lucene开发了Compass</p>
+</li>
+<li><p>2010年 Shay Banon重写了Compass，取名Elasticsearch</p>
+<ul>
+<li>支持分布式，可水平扩展</li>
+<li>降低全文检索的学习曲线，可以被任何编程语言调用</li>
+</ul>
+</li>
+<li><p>完美封装了 Lucene 核心库，设计了友好的 Restful-API，开发者无需过多关注 底层机制，直接开箱即用。</p>
+</li>
+<li><p>分片与副本机制，直接解决了集群下性能与高可用问题。 ES Server进程 3节点 raft (奇数节点) 数据分片 -》lucene实例 分片和副本数 1个ES节点可以有多个lucene实例。也可以指定 一个索引的多个分片</p>
+</li>
+</ul>
+<h5 id="ElasticSearch版本特性"><a href="#ElasticSearch版本特性" class="headerlink" title="ElasticSearch版本特性"></a>ElasticSearch版本特性</h5><p><strong>5.x新特性</strong></p>
+<ul>
+<li>Lucene 6.x， 性能提升，默认打分机制从TF-IDF改为BM 25</li>
+<li>支持Ingest节点&#x2F; Painless Scripting &#x2F; Completion suggested支持&#x2F;原生的 Java REST客户端</li>
+<li>Type标记成deprecated， 支持了Keyword的类型</li>
+<li>性能优化<ul>
+<li><input disabled="" type="checkbox"> 内部引擎移除了避免同一文档并发更新的竞争锁，带来15% - 20%的性能提升</li>
+<li><input disabled="" type="checkbox"> Instant aggregation,支持分片，上聚合的缓存</li>
+<li><input disabled="" type="checkbox"> 新增了Profile AP</li>
+</ul>
+</li>
+</ul>
+<p><strong>6.x新特性</strong></p>
+<ul>
+<li>Lucene 7.x</li>
+<li>新功能<ul>
+<li>跨集群复制(CCR)</li>
+<li>索引生命周期管理</li>
+<li>SQL的支持</li>
+</ul>
+</li>
+<li>更友好的的升级及数据迁移<ul>
+<li>有效存储稀疏字段的新方法，降低了存储成本</li>
+<li>在索引时进行排序，可加快排序的查询性能</li>
+</ul>
+</li>
+</ul>
+<p><strong>7.x新特性</strong></p>
+<ul>
+<li>Lucene 8.0</li>
+<li>重大改进-正式废除单个索引下多Type的支持</li>
+<li>7.1开始，Security 功能免费使用</li>
+<li>ECK - Elasticseach Operator on Kubernetes</li>
+<li>新功能<ul>
+<li>New Cluster coordination</li>
+<li>Feature——Complete High Level REST Client</li>
+<li>Script Score Query</li>
+</ul>
+</li>
+<li>性能优化<ul>
+<li>默认的Primary Shard数从5改为1,避免Over Sharding</li>
+<li>性能优化， 更快的Top K</li>
+</ul>
+</li>
+</ul>
+<p><strong>8.x新特性</strong></p>
+<ul>
+<li>Rest API相比较7.x而言做了比较大的改动（比如彻底删除_type）</li>
+<li>默认开启安全配置</li>
+<li>存储空间优化：对倒排文件使用新的编码集，对于keyword、match_only_text、 text类型字段有效，有3.5%的空间优化提升，对于新建索引和segment自动生效。</li>
+<li>优化geo_point，geo_shape类型的索引（写入）效率：15%的提升。</li>
+<li>技术预览版KNN API发布，（K邻近算法），跟推荐系统、自然语言排名相关。</li>
+</ul>
+<h4 id="ElasticSearch-vs-Solr"><a href="#ElasticSearch-vs-Solr" class="headerlink" title="ElasticSearch vs Solr"></a>ElasticSearch vs Solr</h4><p>Solr 是第一个基于 Lucene 核心库功能完备的搜索引擎产品，诞生远早于 Elasticsearch。</p>
+<p>当单纯的对已有数据进行搜索时，Solr更快。当实时建立索引时, Solr会产生io阻 塞，查询性能较差, Elasticsearch具有明显的优势。</p>
+<p><strong>总结</strong></p>
+<ul>
+<li>Solr 利用 Zookeeper 进行分布式管理，而Elasticsearch 自身带有分布式协调 管理功能。</li>
+<li>Solr 支持更多格式的数据，比如JSON、XML、CSV，而 Elasticsearch 仅支持 json文件格式</li>
+<li>Solr 在传统的搜索应用中表现好于 Elasticsearch，但在处理实时搜索应用时效 率明显低于 Elasticsearch。</li>
+<li>Solr 是传统搜索应用的有力解决方案，但 Elasticsearch更适用于新兴的实时搜 索应用。</li>
+</ul>
+<h4 id="Elastic-Stack介绍"><a href="#Elastic-Stack介绍" class="headerlink" title="Elastic Stack介绍"></a>Elastic Stack介绍</h4><p>​		在Elastic Stack之前我们听说过ELK，ELK分别是Elasticsearch，Logstash，Kibana这 三款软件在一起的简称，在发展的过程中又有新的成员Beats的加入，就形成了Elastic Stack</p>
+<p><img src="https://s3.bmp.ovh/imgs/2022/07/12/417f82aaa9e972eb.png"></p>
+<p>在Elastic Stack生态圈中Elasticsearch作为数据存储和搜索，是生态圈的基石，Kibana在 上层提供用户一个可视化及操作的界面，Logstash和Beat可以对数据进行收集。在上图的 右侧X-Pack部分则是Elastic公司提供的商业项目。</p>
+<h4 id="ElasticSearch应用场景"><a href="#ElasticSearch应用场景" class="headerlink" title="ElasticSearch应用场景"></a>ElasticSearch应用场景</h4><ul>
+<li>站内搜索</li>
+<li>日志管理与分析</li>
+<li>大数据分析</li>
+<li>应用性能监控</li>
+<li>机器学习</li>
+</ul>
+<p>国内现在有大量的公司都在使用 Elasticsearch，包括携程、滴滴、今日头条、饿了么、 360安全、小米、vivo等诸多知名公司。除了搜索之外，结合Kibana、Logstash、Beats， Elastic Stack还被广泛运用在大数据近实时分析领域，包括日志分析、指标监控、信息安全 等多个领域。它可以帮助你探索海量结构化、非结构化数据，按需创建可视化报表，对监控 数据设置报警阈值，甚至通过使用机器学习技术，自动识别异常状况。</p>
+<h4 id="ElasticSearch快速开始"><a href="#ElasticSearch快速开始" class="headerlink" title="ElasticSearch快速开始"></a>ElasticSearch快速开始</h4><p><strong>下载并解压ElasticSearch</strong></p>
+<p>下载地址： <a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/past-releases#elasticsearch">https://www.elastic.co/cn/downloads/past-releases#elasticsearch</a></p>
+<p>选择版本：7.17.3</p>
+<p>ElasticSearch文件目录结构</p>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bin</td>
+<td>脚本文件，包括启动elasticsearch，安装插件，运行统计数据等</td>
+</tr>
+<tr>
+<td>config</td>
+<td>配置文件目录，如elasticsearch配置、角色配置、jvm配置等。</td>
+</tr>
+<tr>
+<td>jdk</td>
+<td>java运行环境</td>
+</tr>
+<tr>
+<td>data</td>
+<td>默认的数据存放目录，包含节点、分片、索引、文档的所有数 据，生产环境需要修改。</td>
+</tr>
+<tr>
+<td>lib</td>
+<td>elasticsearch依赖的Java类库</td>
+</tr>
+<tr>
+<td>logs</td>
+<td>默认的日志文件存储路径，生产环境需要修改。</td>
+</tr>
+<tr>
+<td>modules</td>
+<td>包含所有的Elasticsearch模块，如Cluster、Discovery、 Indices等。</td>
+</tr>
+<tr>
+<td>plugins</td>
+<td>已安装插件目录</td>
+</tr>
+</tbody></table>
+<p><strong>主配置文件elasticsearch.yml</strong></p>
+<ul>
+<li>cluster.name 当前节点所属集群名称，多个节点如果要组成同一个集群，那么集群名称一定要配置成相 同。默认值elasticsearch，生产环境建议根据ES集群的使用目的修改成合适的名字。</li>
+<li>node.name 当前节点名称，默认值当前节点部署所在机器的主机名，所以如果一台机器上要起多个ES 节点的话，需要通过配置该属性明确指定不同的节点名称。</li>
+<li>path.data 配置数据存储目录，比如索引数据等，默认值 $ES_HOME&#x2F;data，生产环境下强烈建议部 署到另外的安全目录，防止ES升级导致数据被误删除。</li>
+<li>path.logs 配置日志存储目录，比如运行日志和集群健康信息等，默认值 $ES_HOME&#x2F;logs，生产环境 下强烈建议部署到另外的安全目录，防止ES升级导致数据被误删除。</li>
+<li>bootstrap.memory_lock 配置ES启动时是否进行内存锁定检查，默认值true。 ES对于内存的需求比较大，一般生产环境建议配置大内存，如果内存不足，容易导致内存 交换到磁盘，严重影响ES的性能。所以默认启动时进行相应大小内存的锁定，如果无法锁 定则会启动失败。 非生产环境可能机器内存本身就很小，能够供给ES使用的就更小，如果该参数配置为true 的话很可能导致无法锁定内存以致ES无法成功启动，此时可以修改为false。</li>
+<li>network.host 配置能够访问当前节点的主机，默认值为当前节点所在机器的本机回环地址127.0.0.1 和 [::1]，这就导致默认情况下只能通过当前节点所在主机访问当前节点。可以配置为 0.0.0.0 ，表示所有主机均可访问。</li>
+<li>http.port 配置当前ES节点对外提供服务的http端口，默认值 9200</li>
+<li>discovery.seed_hosts 配置参与集群节点发现过程的主机列表，说白一点就是集群中所有节点所在的主机列表，可 以是具体的IP地址，也可以是可解析的域名。</li>
+<li>cluster.initial_master_nodes 配置ES集群初始化时参与master选举的节点名称列表，必须与node.name配置的一致。ES 集群首次构建完成后，应该将集群中所有节点的配置文件中的 cluster.initial_master_nodes配置项移除，重启集群或者将新节点加入某个已存在的集群 时切记不要设置该配置项。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1 #ES开启远程访问</span><br><span class="line">2 network.host: 0.0.0.0</span><br></pre></td></tr></table></figure>
+
+<p><strong>修改JVM配置</strong></p>
+<p>修改config&#x2F;jvm.options配置文件，调整jvm堆内存大小</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 vim jvm.options</span><br><span class="line">2 ‐Xms4g</span><br><span class="line">3 ‐Xmx4g</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置的建议</strong></p>
+<ul>
+<li>Xms和Xms设置成—样</li>
+<li>Xmx不要超过机器内存的50%</li>
+<li>不要超过30GB - <a target="_blank" rel="noopener" href="https://www.elastic.co/cn/blog/a-heap-of-trouble">https://www.elastic.co/cn/blog/a-heap-of-trouble</a></li>
+</ul>
+<p><strong>Linux（centos7）</strong></p>
+<p> ES不允许使用root账号启动服务，如果你当前账号是root，则需要创建一个专有账户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1 #为elaticsearch创建用户并赋予相应权限</span><br><span class="line">2 adduser es</span><br><span class="line">3 passwd es</span><br><span class="line">4 chown ‐R es:es .</span><br><span class="line">5 elasticsearch‐17.3</span><br></pre></td></tr></table></figure>
+
+<p>运行<a target="_blank" rel="noopener" href="http://localhost:9200/">http://localhost:9200/</a></p>
+<p><img src="https://s3.bmp.ovh/imgs/2022/07/12/b7c9bd63eb079520.png"></p>
+<h4 id="客户端Kibana安装"><a href="#客户端Kibana安装" class="headerlink" title="客户端Kibana安装"></a>客户端Kibana安装</h4><p>Kibana是一个开源分析和可视化平台，旨在与Elasticsearch协同工作。</p>
+<p><strong>1）下载并解压缩Kibana</strong></p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/past-releases#kibana">https://www.elastic.co/cn/downloads/past-releases#kibana</a> </p>
+<p>选择版本：7.17.3</p>
+<p><strong>2）修改Kibana.yml</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1 vim config/kibana.yml</span><br><span class="line">2</span><br><span class="line">3 server.port: 5601</span><br><span class="line">4 server.host: &quot;localhost&quot; #服务器ip</span><br><span class="line">5 elasticsearch.hosts: [&quot;http://localhost:9200&quot;] #elasticsearch的访问地址</span><br><span class="line">6 i18n.locale: &quot;zh‐CN&quot; #Kibana汉化</span><br></pre></td></tr></table></figure>
+
+<p><strong>3）运行Kibana</strong></p>
+<p>注意：kibana也需要非root用户启动</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1 bin/kibana</span><br><span class="line">2 #后台启动</span><br><span class="line">3 nohup bin/kibana &amp;</span><br></pre></td></tr></table></figure>
+
+<p>访问Kibana: <a target="_blank" rel="noopener" href="http://localhost:5601/">http://localhost:5601/</a></p>
+<h4 id="ElasticSearch基本概念"><a href="#ElasticSearch基本概念" class="headerlink" title="ElasticSearch基本概念"></a>ElasticSearch基本概念</h4><h4 id="关系型数据库-VS-ElasticSearch"><a href="#关系型数据库-VS-ElasticSearch" class="headerlink" title="关系型数据库 VS ElasticSearch"></a>关系型数据库 VS ElasticSearch</h4><ul>
+<li>在7.0之前，一个 Index可以设置多个Types</li>
+<li>目前Type已经被Deprecated，7.0开始，一个索引只能创建一个Type - “_doc”</li>
+<li>传统关系型数据库和Elasticsearch的区别:<ul>
+<li>Elasticsearch- Schemaless &#x2F;相关性&#x2F;高性能全文检索</li>
+<li>RDMS —事务性&#x2F; Join</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://s3.bmp.ovh/imgs/2022/07/12/3696dff7465ec2e2.png"></p>
+<h5 id="索引（Index）"><a href="#索引（Index）" class="headerlink" title="索引（Index）"></a>索引（Index）</h5><p>一个索引就是一个拥有几分相似特征的文档的集合。比如说，可以有一个客户数据的索引， 另一个产品目录的索引，还有一个订单数据的索引。</p>
+<p>一个索引由一个名字来标识（必须全部是小写字母的），并且当我们要对对应于这个索引中 的文档进行索引、搜索、更新和删除的时候，都要使用到这个名字。</p>
+<h5 id="文档（Document）"><a href="#文档（Document）" class="headerlink" title="文档（Document）"></a>文档（Document）</h5><ul>
+<li>Elasticsearch是面向文档的，文档是所有可搜索数据的最小单位。<ul>
+<li>日志文件中的日志项</li>
+<li>一本电影的具体信息&#x2F;一张唱片的详细信息</li>
+<li>MP3播放器里的一首歌&#x2F;一篇PDF文档中的具体内容</li>
+</ul>
+</li>
+<li>文档会被序列化成JSON格式，保存在Elasticsearch中<ul>
+<li>JSON对象由字段组成</li>
+<li>每个字段都有对应的字段类型(字符串&#x2F;数值&#x2F;布尔&#x2F;日期&#x2F;二进 制&#x2F;范围类型)</li>
+</ul>
+</li>
+<li>每个文档都有一个Unique ID<ul>
+<li>可以自己指定ID或者通过Elasticsearch自动生成</li>
+</ul>
+</li>
+<li>一篇文档包含了一系列字段，类似数据库表中的一条记录</li>
+<li>JSON文档，格式灵活，不需要预先定义格式<ul>
+<li>字段的类型可以指定或者通过Elasticsearch自动推算</li>
+<li>支持数组&#x2F;支持嵌套</li>
+</ul>
+</li>
+</ul>
+<h5 id="文档元数据"><a href="#文档元数据" class="headerlink" title="文档元数据"></a>文档元数据</h5><p><strong>元数据，用于标注文档的相关信息：</strong></p>
+<ul>
+<li>_index：文档所属的索引名</li>
+<li>_type：文档所属的类型名</li>
+<li>_id：文档唯—ld</li>
+<li>_source: 文档的原始Json数据</li>
+<li>_version: 文档的版本号，修改删除操作_version都会自增1</li>
+<li>seq_no: 和_version一样，一旦数据发生更改，数据也一直是累计的。 Shard级别严格递增，保证后写入的Doc的_seq_no大于先写入的Doc的_seq_no。</li>
+<li>_primary_term: _primary_term主要是用来恢复数据时处理当多个文档的 _seq_no一样时的冲突，避免Primary Shard上的写入被覆盖。每当Primary Shard 发生重新分配时，比如重启，Primary选举等，_primary_term会递增1。</li>
+</ul>
+<p><strong>ElasticSearch索引操作</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/index.html">https://www.elastic.co/guide/en/elasticsearch/reference/7.17/index.html</a></p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">GET</span> _search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#格式: PUT /索引名称</span></span><br><span class="line"><span class="title class_">PUT</span> /es_db</span><br><span class="line"></span><br><span class="line"><span class="comment">#格式: DELETE /索引名称 - 删除索引</span></span><br><span class="line"><span class="title class_">DELETE</span> /es_db</span><br><span class="line"></span><br><span class="line"><span class="comment">#创建索引时可以设置分片数和副本数</span></span><br><span class="line"><span class="title class_">PUT</span> /es_db</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;settings&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;number_of_shards&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="string">&quot;number_of_replicas&quot;</span>: <span class="number">2</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#修改索引配置</span></span><br><span class="line"><span class="title class_">PUT</span> /es_db/_settings</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;index&quot;</span><span class="symbol">:</span>&#123;</span><br><span class="line">    <span class="string">&quot;number_of_replicas&quot;</span> : <span class="number">1</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#查询索引</span></span><br><span class="line"><span class="title class_">GET</span> /es_db</span><br><span class="line"></span><br><span class="line"><span class="comment">#es_db是否存在</span></span><br><span class="line"><span class="title class_">HEAD</span> /es_db</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建索引并且设置分词方法</span></span><br><span class="line"><span class="title class_">PUT</span> /es_db</span><br><span class="line">&#123;</span><br><span class="line"> <span class="string">&quot;settings&quot;</span> : &#123;</span><br><span class="line"> <span class="string">&quot;index&quot;</span> : &#123;</span><br><span class="line">   <span class="string">&quot;analysis.analyzer.default.type&quot;</span>: <span class="string">&quot;ik_max_word&quot;</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看es节点</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/nodes</span><br><span class="line"><span class="title class_">GET</span> /_cat/allocation <span class="comment">#查看单节点的shard分配整体情况</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/shards <span class="comment">#查看各shard的详细情况</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/shards/&#123;index&#125;</span><br><span class="line"><span class="title class_">GET</span> /_cat/master <span class="comment">#查看master节点信息</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/master <span class="comment">#查看master节点信息</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/indices <span class="comment">#查看集群中所有index的详细信息</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/indices/&#123;index&#125; <span class="comment">#查看集群中指定index的详细信息</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/segments <span class="comment">#查看各index的segment详细信息,包括segment名, 所属shard, 内存(磁盘)占用大小, 是否刷盘</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/segments/&#123;index&#125;<span class="comment">#查看指定index的segment详细信息</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/count <span class="comment">#查看当前集群的doc数量</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/count/&#123;index&#125; <span class="comment">#查看指定索引的doc数量</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/recovery <span class="comment">#查看集群内每个shard的recovery过程.调整replica。</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/recovery/&#123;index&#125;<span class="comment">#查看指定索引shard的recovery过程</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/health <span class="comment">#查看集群当前状态：红、黄、绿</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/pending_tasks <span class="comment">#查看当前集群的pending task</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/aliases <span class="comment">#查看集群中所有alias信息,路由配置等</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/aliases/&#123;<span class="keyword">alias</span>&#125; <span class="comment">#查看指定索引的alias信息</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/thread_pool <span class="comment">#查看集群各节点内部不同类型的threadpool的统计信息,</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/plugins <span class="comment">#查看集群各个节点上的plugin信息</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/fielddata <span class="comment">#查看当前集群各个节点的fielddata内存使用情况</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/fielddata/&#123;fields&#125; <span class="comment">#查看指定field的内存使用情况,里面传field属性对应的值</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/nodeattrs <span class="comment">#查看单节点的自定义属性</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/repositories <span class="comment">#输出集群中注册快照存储库</span></span><br><span class="line"><span class="title class_">GET</span> /_cat/templates <span class="comment">#输出当前正在存在的模板信息</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#ES的默认分词设置是standard，会单字拆分</span></span><br><span class="line"><span class="title class_">POST</span> _analyze</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;analyzer&quot;</span><span class="symbol">:<span class="string">&quot;standard&quot;</span></span>,</span><br><span class="line">  <span class="string">&quot;text&quot;</span><span class="symbol">:<span class="string">&quot;中华人民共和国&quot;</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#ik_smart:会做最粗粒度的拆</span></span><br><span class="line"><span class="title class_">POST</span> _analyze</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;analyzer&quot;</span><span class="symbol">:<span class="string">&quot;ik_smart&quot;</span></span>,</span><br><span class="line">  <span class="string">&quot;text&quot;</span><span class="symbol">:<span class="string">&quot;中华人民共和国&quot;</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#ik_max_word:会将文本做最细粒度的拆分</span></span><br><span class="line"><span class="title class_">POST</span> _analyze</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;analyzer&quot;</span><span class="symbol">:<span class="string">&quot;ik_max_word&quot;</span></span>,</span><br><span class="line">  <span class="string">&quot;text&quot;</span><span class="symbol">:<span class="string">&quot;中华人民共和国&quot;</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">POST</span> /es_db/_doc</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;张三&quot;</span>,</span><br><span class="line">  <span class="string">&quot;sex&quot;</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="string">&quot;age&quot;</span>: <span class="number">25</span>,</span><br><span class="line">  <span class="string">&quot;address&quot;</span>: <span class="string">&quot;广州天河公园&quot;</span>,</span><br><span class="line">  <span class="string">&quot;remark&quot;</span>: <span class="string">&quot;java developer&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 查询前10条文档</span></span><br><span class="line"><span class="title class_">GET</span> /es_db/_doc/_search</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+    <!--文末结束语-->
+    
+        <div style="text-align:center;color: #ccc;font-size:24px;"> --- 本文结束 <i class="fas fa-heart"></i> The End --- </div>
+    
+    <!--页脚广告-->
+    
+    <v-divider></v-divider>
+    
+    <div class="post-nav">             
+              
+          
+            <div class="post-nav-button float-right">
+                <a class="font-weight-bold text-right" href="/2022/07/12/hello-world/">      
+                    Hello World1231231231231231
+                </a>
+                <v-icon>chevron_right</v-icon>
+            </div>
+        
+    </div>
+</v-card>
+
+
+
+        
+                            <div id="mobile-footer" class="d-block d-md-none">
+                                <v-divider></v-divider>
+                                <div id="mobile-footer-content">
+                                    <span>Theme: <a target="_blank" rel="noopener" href="https://github.com/kb1000fx/hexo-theme-insulin">Insulin</a> &nbsp; Powered by <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a></span><br>
+                                    <span> &copy; 2015 - 2022 John Doe</span>
+                                </div>
+                            </div>                   
+                        </v-col>                                            
+                    </v-row>
+                </v-container>
+            </v-content>
+        </v-app>
+    </div>
+    
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.2.30"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-base64@3.5.2/base64.min.js"></script>
+
+<script src="/js/main.js"></script>
+
+
+
+
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@8.4.8/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({
+        startOnLoad: true,
+        theme: "default"
+    });</script>
+
+
+
+
+
+</body>
+</html>
